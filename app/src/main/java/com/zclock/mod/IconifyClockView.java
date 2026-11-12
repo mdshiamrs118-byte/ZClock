@@ -19,7 +19,7 @@ public class IconifyClockView extends FrameLayout {
     private Prefs prefs;
     private View content;
     private String key = "";
-    private int targetH = 1;
+    private int targetH = 1, layoutH = 1;
 
     /** When true, parents stop clipping their children so the clock can be moved anywhere. */
     public boolean unclipAncestors;
@@ -38,7 +38,11 @@ public class IconifyClockView extends FrameLayout {
         catch (Throwable t) { return c; }
     }
 
+    /** The view's own height. */
     public int targetHeight() { return targetH; }
+
+    /** Height the layout reserves (moves the date + notifications). */
+    public int layoutHeight() { return layoutH; }
 
     public void apply(Prefs p) {
         this.prefs = p;
@@ -49,7 +53,7 @@ public class IconifyClockView extends FrameLayout {
             key = k;
             inflate(n, recolor ? p.i(Prefs.LS_COLOR) : 0, recolor);
         }
-        if (content == null) { targetH = 1; return; }
+        if (content == null) { targetH = 1; layoutH = 1; return; }
 
         float d = getResources().getDisplayMetrics().density;
         float base = p.i(Prefs.LS_SIZE) / 120f;
@@ -57,12 +61,12 @@ public class IconifyClockView extends FrameLayout {
         int sw = getResources().getDisplayMetrics().widthPixels;
         content.measure(View.MeasureSpec.makeMeasureSpec(sw, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        int nat = Math.max(1, Math.round(content.getMeasuredHeight() * sy));
-        targetH = p.layoutH(nat, d);
+        targetH = Math.max(1, Math.round(content.getMeasuredHeight() * sy));
+        layoutH = p.layoutH(targetH, d);
         content.setScaleX(sx);
         content.setScaleY(sy);
         setTranslationX(p.i(Prefs.LS_X) * d);
-        setTranslationY(p.transY(nat, targetH, d));
+        setTranslationY(p.i(Prefs.LS_Y) * d);
 
         ViewGroup.LayoutParams lp = getLayoutParams();
         if (lp != null && lp.height != targetH) { lp.height = targetH; setLayoutParams(lp); }

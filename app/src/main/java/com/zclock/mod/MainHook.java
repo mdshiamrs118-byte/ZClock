@@ -277,7 +277,9 @@ public class MainHook implements IXposedHookLoadPackage {
             return;
         }
 
-        int h;
+        // h  = the clock view's own height (never shrunk, so nothing gets clipped)
+        // lh = the height the layout reserves for it (moves the date + notifications)
+        int h, lh;
         IconifyClockView iv = (IconifyClockView) g.findViewWithTag(ICONIFY_TAG);
         if (style >= Prefs.ICONIFY_BASE) {
             // ported Iconify layout
@@ -286,25 +288,27 @@ public class MainHook implements IXposedHookLoadPackage {
                 iv = new IconifyClockView(g.getContext(), p);
                 iv.setTag(ICONIFY_TAG);
                 iv.unclipAncestors = true;
-                addAtTop(g, iv, iv.targetHeight());
+                place(g, iv, iv.targetHeight(), iv.layoutHeight(), true);
             } else {
                 iv.apply(p);
-                setHeight(iv, iv.targetHeight());
+                place(g, iv, iv.targetHeight(), iv.layoutHeight(), false);
             }
             h = iv.targetHeight();
+            lh = iv.layoutHeight();
             iv.setVisibility(View.VISIBLE);
         } else {
             // built-in canvas styles
             if (iv != null) iv.setVisibility(View.GONE);
             h = CustomClockView.heightPx(p, d);
+            lh = CustomClockView.layoutHeightPx(p, d);
             if (cv == null) {
                 cv = new CustomClockView(g.getContext(), p);
                 cv.setTag(CUSTOM_TAG);
                 cv.unclipAncestors = true;
-                addAtTop(g, cv, h);
+                place(g, cv, h, lh, true);
             } else {
                 cv.setPrefs(p);
-                setHeight(cv, h);
+                place(g, cv, h, lh, false);
             }
             cv.setVisibility(View.VISIBLE);
             cv.invalidate();
@@ -313,20 +317,32 @@ public class MainHook implements IXposedHookLoadPackage {
         for (View v : stock) {
             if (v == null) continue;
             v.setTag(HIDE_TAG);
-            setHeight(v, h);   // keeps the date/status area positioned below our clock
+            setHeight(v, lh);   // the stock views decide how much room the date/notifications get
         }
     }
 
-    private static void addAtTop(ViewGroup g, View v, int h) {
+    /**
+     * Puts our clock view at the top of the switch with its full height h, while a (possibly negative)
+     * bottom margin makes the parent measure only lh. That moves everything below the clock without
+     * shrinking the clock view itself, so its drawing is never clipped.
+     */
+    private static void place(ViewGroup g, View v, int h, int lh, boolean add) {
         ViewGroup.LayoutParams lp;
-        if (g instanceof RelativeLayout) {
-            RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h);
-            rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            lp = rl;
+        if (add) {
+            if (g instanceof RelativeLayout) {
+                RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h);
+                rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                lp = rl;
+            } else {
+                lp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h);
+            }
         } else {
-            lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h);
+            lp = v.getLayoutParams();
+            if (lp == null) return;
+            lp.height = h;
         }
-        g.addView(v, lp);
+        if (lp instanceof ViewGroup.MarginLayoutParams) ((ViewGroup.MarginLayoutParams) lp).bottomMargin = lh - h;
+        if (add) g.addView(v, lp); else v.setLayoutParams(lp);
     }
 
     private static void tweakStock(TextView t, Prefs p, float d) {
