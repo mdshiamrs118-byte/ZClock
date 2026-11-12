@@ -20,11 +20,20 @@ public final class Prefs {
     // ---- Lock screen clock ----
     public static final String LS_ON = "ls_on", LS_STYLE = "ls_style", LS_SIZE = "ls_size",
             LS_WEIGHT = "ls_weight", LS_SX = "ls_sx", LS_SY = "ls_sy", LS_X = "ls_x", LS_Y = "ls_y",
-            LS_COLOR = "ls_color", LS_24H = "ls_24h", LS_DATE = "ls_date", LS_SEC = "ls_sec";
+            LS_COLOR = "ls_color", LS_RECOLOR = "ls_recolor", LS_24H = "ls_24h", LS_DATE = "ls_date", LS_SEC = "ls_sec";
 
-    public static final String[] LS_STYLES = {
-            "Stock clock (modified)", "Stacked digital", "Bold + thin", "Analog classic",
-            "Analog minimal", "Binary dots", "Progress ring", "Outline"};
+    /** Styles 0-7 are built in; styles from ICONIFY_BASE on are the ported Iconify layouts. */
+    public static final int ICONIFY_BASE = 8, ICONIFY_COUNT = 60;
+    public static final String[] LS_STYLES = buildLsStyles();
+
+    private static String[] buildLsStyles() {
+        String[] base = {"Stock clock (modified)", "Stacked digital", "Bold + thin", "Analog classic",
+                "Analog minimal", "Binary dots", "Progress ring", "Outline"};
+        String[] all = new String[ICONIFY_BASE + ICONIFY_COUNT];
+        System.arraycopy(base, 0, all, 0, base.length);
+        for (int i = 0; i < ICONIFY_COUNT; i++) all[ICONIFY_BASE + i] = "Iconify " + (i + 1);
+        return all;
+    }
 
     public static final String[] SB_STYLES = {
             "System default", "24-hour  (14:05)", "12-hour + AM/PM  (2:05 PM)", "12-hour  (2:05)",
@@ -41,7 +50,7 @@ public final class Prefs {
         DEF.put(SB_SPACING, 0); DEF.put(SB_COLOR, 0);
         DEF.put(LS_ON, 1); DEF.put(LS_STYLE, 1); DEF.put(LS_SIZE, 120); DEF.put(LS_WEIGHT, 600);
         DEF.put(LS_SX, 100); DEF.put(LS_SY, 100); DEF.put(LS_X, 0); DEF.put(LS_Y, 0);
-        DEF.put(LS_COLOR, 0xFFFFFFFF); DEF.put(LS_24H, 1); DEF.put(LS_DATE, 1); DEF.put(LS_SEC, 0);
+        DEF.put(LS_COLOR, 0xFFFFFFFF); DEF.put(LS_RECOLOR, 0); DEF.put(LS_24H, 1); DEF.put(LS_DATE, 1); DEF.put(LS_SEC, 0);
     }
 
     private final SharedPreferences sp;

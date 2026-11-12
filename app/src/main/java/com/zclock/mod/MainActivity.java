@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
     private SharedPreferences sp;
     private Prefs prefs;
     private CustomClockView preview;
+    private IconifyClockView ipreview;
     private LinearLayout root;
 
     /** Hooked by the module (returns true when LSPosed has injected us). */
@@ -68,9 +69,12 @@ public class MainActivity extends Activity {
         preview = new CustomClockView(this, prefs);
         box.addView(preview, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 CustomClockView.heightPx(prefs, getResources().getDisplayMetrics().density), Gravity.CENTER));
+        ipreview = new IconifyClockView(this, prefs);
+        box.addView(ipreview, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         root.addView(box, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(300)));
         TextView hint = new TextView(this);
-        hint.setText("Preview of the lock screen clock (\"Stock clock\" style is previewed as Stacked).");
+        hint.setText("Preview of the lock screen clock (\"Stock clock\" style is previewed as Stacked). Iconify styles keep their own fonts and colours.");
         hint.setTextSize(12);
         root.addView(hint);
 
@@ -85,6 +89,7 @@ public class MainActivity extends Activity {
         addSeek("Position X", Prefs.LS_X, -250, 250, " dp");
         addSeek("Position Y", Prefs.LS_Y, -250, 250, " dp");
         addColor("Colour", Prefs.LS_COLOR, false);
+        addSwitch("Recolour Iconify clocks with this colour", Prefs.LS_RECOLOR);
         addSwitch("24-hour time", Prefs.LS_24H);
         addSwitch("Show date", Prefs.LS_DATE);
         addSwitch("Show seconds (analog / binary / ring)", Prefs.LS_SEC);
@@ -123,6 +128,7 @@ public class MainActivity extends Activity {
             }
         });
         root.addView(reset);
+        changed();
     }
 
     // ---------- helpers ----------
@@ -131,10 +137,20 @@ public class MainActivity extends Activity {
     private void sendRefresh() { sendBroadcast(new Intent(Prefs.ACTION_REFRESH)); }
 
     private void changed() {
-        ViewGroup.LayoutParams lp = preview.getLayoutParams();
-        lp.height = CustomClockView.heightPx(prefs, getResources().getDisplayMetrics().density);
-        preview.setLayoutParams(lp);
-        preview.setPrefs(prefs);
+        boolean iconify = prefs.i(Prefs.LS_STYLE) >= Prefs.ICONIFY_BASE;
+        preview.setVisibility(iconify ? View.GONE : View.VISIBLE);
+        ipreview.setVisibility(iconify ? View.VISIBLE : View.GONE);
+        if (iconify) {
+            ipreview.apply(prefs);
+            ViewGroup.LayoutParams lp = ipreview.getLayoutParams();
+            lp.height = ipreview.targetHeight();
+            ipreview.setLayoutParams(lp);
+        } else {
+            ViewGroup.LayoutParams lp = preview.getLayoutParams();
+            lp.height = CustomClockView.heightPx(prefs, getResources().getDisplayMetrics().density);
+            preview.setLayoutParams(lp);
+            preview.setPrefs(prefs);
+        }
     }
 
     private void header(String t) {

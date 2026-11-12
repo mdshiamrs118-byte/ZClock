@@ -33,6 +33,7 @@ public class MainHook implements IXposedHookLoadPackage {
     private static final String SYSUI = "com.android.systemui";
     private static final String HIDE_TAG = "zclock_hide";
     private static final String CUSTOM_TAG = "zclock_custom";
+    private static final String ICONIFY_TAG = "zclock_iconify";
 
     private static XSharedPreferences xp;
     private static boolean receiverRegistered;
@@ -195,6 +196,8 @@ public class MainHook implements IXposedHookLoadPackage {
 
         if (!p.b(Prefs.LS_ON) || style <= 0) {
             if (cv != null) cv.setVisibility(View.GONE);
+            View ic = g.findViewWithTag(ICONIFY_TAG);
+            if (ic != null) ic.setVisibility(View.GONE);
             for (View v : stock) {
                 if (v == null) continue;
                 v.setTag(null);
@@ -204,32 +207,56 @@ public class MainHook implements IXposedHookLoadPackage {
             return;
         }
 
-        int h = CustomClockView.heightPx(p, d);
-        if (cv == null) {
-            cv = new CustomClockView(g.getContext(), p);
-            cv.setTag(CUSTOM_TAG);
-            cv.unclipAncestors = true;
-            ViewGroup.LayoutParams lp;
-            if (g instanceof RelativeLayout) {
-                RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h);
-                rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                lp = rl;
+        int h;
+        IconifyClockView iv = (IconifyClockView) g.findViewWithTag(ICONIFY_TAG);
+        if (style >= Prefs.ICONIFY_BASE) {
+            // ported Iconify layout
+            if (cv != null) cv.setVisibility(View.GONE);
+            if (iv == null) {
+                iv = new IconifyClockView(g.getContext(), p);
+                iv.setTag(ICONIFY_TAG);
+                iv.unclipAncestors = true;
+                addAtTop(g, iv, iv.targetHeight());
             } else {
-                lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h);
+                iv.apply(p);
+                setHeight(iv, iv.targetHeight());
             }
-            g.addView(cv, lp);
+            h = iv.targetHeight();
+            iv.setVisibility(View.VISIBLE);
         } else {
-            cv.setPrefs(p);
-            setHeight(cv, h);
+            // built-in canvas styles
+            if (iv != null) iv.setVisibility(View.GONE);
+            h = CustomClockView.heightPx(p, d);
+            if (cv == null) {
+                cv = new CustomClockView(g.getContext(), p);
+                cv.setTag(CUSTOM_TAG);
+                cv.unclipAncestors = true;
+                addAtTop(g, cv, h);
+            } else {
+                cv.setPrefs(p);
+                setHeight(cv, h);
+            }
+            cv.setVisibility(View.VISIBLE);
+            cv.invalidate();
         }
-        cv.setVisibility(View.VISIBLE);
-        cv.invalidate();
 
         for (View v : stock) {
             if (v == null) continue;
             v.setTag(HIDE_TAG);
             setHeight(v, h);   // keeps the date/status area positioned below our clock
         }
+    }
+
+    private static void addAtTop(ViewGroup g, View v, int h) {
+        ViewGroup.LayoutParams lp;
+        if (g instanceof RelativeLayout) {
+            RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h);
+            rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            lp = rl;
+        } else {
+            lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h);
+        }
+        g.addView(v, lp);
     }
 
     private static void tweakStock(TextView t, Prefs p, float d) {

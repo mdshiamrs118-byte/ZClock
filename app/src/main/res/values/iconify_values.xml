@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="default_user_name">User</string>
+<string name="welcome_back">Welcome back!</string>
+<color name="zc_primary">#FF4A90E2</color>
+<color name="material_dynamic_primary10">#FF001D36</color>
+<color name="material_dynamic_primary30">#FF00497D</color>
+<color name="material_dynamic_primary80">#FF9FCAFF</color>
+<color name="material_dynamic_secondary10">#FF101C2B</color>
+<color name="material_dynamic_secondary90">#FFD7E3F8</color>
+<color name="material_dynamic_tertiary20">#FF3B2948</color>
+</resources>
