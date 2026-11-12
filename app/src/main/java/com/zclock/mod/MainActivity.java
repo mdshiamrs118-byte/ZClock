@@ -91,7 +91,8 @@ public class MainActivity extends Activity {
         addColor("Colour", Prefs.LS_COLOR, false);
         addSwitch("Recolour Iconify clocks with this colour", Prefs.LS_RECOLOR);
         addSwitch("24-hour time", Prefs.LS_24H);
-        addSwitch("Show date", Prefs.LS_DATE);
+        addSwitch("Show date (on the custom clock)", Prefs.LS_DATE);
+        addSwitch("Hide the original system date", Prefs.LS_HIDE_DATE);
         addSwitch("Show seconds (analog / binary / ring)", Prefs.LS_SEC);
 
         // ---- Status bar ----

@@ -10,6 +10,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -39,6 +40,7 @@ public class MainHook implements IXposedHookLoadPackage {
     private static boolean receiverRegistered;
     private static final Set<TextView> clocks = Collections.newSetFromMap(new WeakHashMap<TextView, Boolean>());
     private static final Set<TextView> secLoops = Collections.newSetFromMap(new WeakHashMap<TextView, Boolean>());
+    private static final Set<ViewGroup> slices = Collections.newSetFromMap(new WeakHashMap<ViewGroup, Boolean>());
     private static final Set<ViewGroup> switches = Collections.newSetFromMap(new WeakHashMap<ViewGroup, Boolean>());
     private static final WeakHashMap<TextView, String> sigs = new WeakHashMap<>();
 
@@ -175,12 +177,42 @@ public class MainHook implements IXposedHookLoadPackage {
             }
         });
 
+        // Stock lock screen date (KeyguardSliceView): optionally hide it
+        Class<?> slice = XposedHelpers.findClassIfExists("com.android.keyguard.KeyguardSliceView", cl);
+        if (slice != null) {
+            XC_MethodHook dateHook = new XC_MethodHook() {
+                @Override protected void afterHookedMethod(MethodHookParam param) {
+                    ViewGroup g = (ViewGroup) param.thisObject;
+                    ensureReceiver(g.getContext());
+                    slices.add(g);
+                    applyDateVisibility(g);
+                }
+            };
+            XposedBridge.hookAllMethods(slice, "onFinishInflate", dateHook);
+            XposedBridge.hookAllMethods(slice, "showSlice", dateHook);
+        } else {
+            XposedBridge.log("ZClock: KeyguardSliceView not found");
+        }
+
         // Skip drawing of the stock clock views while a custom style is active
         XposedHelpers.findAndHookMethod(TextView.class, "onDraw", Canvas.class, new XC_MethodHook() {
             @Override protected void beforeHookedMethod(MethodHookParam param) {
                 if (HIDE_TAG.equals(((View) param.thisObject).getTag())) param.setResult(null);
             }
         });
+    }
+
+    private static void applyDateVisibility(ViewGroup g) {
+        try {
+            View title = field(g, "mTitle");   // the date line of the keyguard slice
+            if (title == null) return;
+            if (prefs().b(Prefs.LS_HIDE_DATE)) {
+                title.setVisibility(View.GONE);
+            } else if (title instanceof TextView && ((TextView) title).getText().length() > 0
+                    && title.getVisibility() == View.GONE) {
+                title.setVisibility(View.VISIBLE);   // toggled off again -> bring it back
+            }
+        } catch (Throwable t) { XposedBridge.log("ZClock date: " + t); }
     }
 
     private static View field(Object o, String name) {
@@ -296,6 +328,7 @@ public class MainHook implements IXposedHookLoadPackage {
             try { XposedHelpers.callMethod(tv, "updateClock"); } catch (Throwable ignored) {}
             startSeconds(tv);
         }
+        for (ViewGroup g : new ArrayList<>(slices)) applyDateVisibility(g);
         for (ViewGroup g : new ArrayList<>(switches)) {
             try { setupKeyguard(g); } catch (Throwable t) { XposedBridge.log("ZClock refresh: " + t); }
         }
