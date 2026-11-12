@@ -78,7 +78,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="80dp"
                 android:background="@drawable/lockscreen_clock_8_custom_background"
-                android:backgroundTint="@android:color/system_accent1_100"
+                android:backgroundTint="@color/zc_accent1_100"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="4dp"
                 android:tag="accent1">
@@ -92,7 +92,7 @@
                     android:gravity="center|start"
                     android:singleLine="true"
                     android:tag="text2|nolineheight"
-                    android:textColor="@android:color/system_accent1_900"
+                    android:textColor="@color/zc_accent1_900"
                     android:textSize="10dp" />
             </FrameLayout>
         </LinearLayout>

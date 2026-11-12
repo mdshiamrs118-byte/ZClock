@@ -29,7 +29,7 @@
                 android:includeFontPadding="false"
                 android:singleLine="true"
                 android:tag="accent1|nolineheight"
-                android:textColor="@android:color/system_accent1_400"
+                android:textColor="@color/zc_accent1_400"
                 android:textSize="160.0dp" />
 
             <TextClock

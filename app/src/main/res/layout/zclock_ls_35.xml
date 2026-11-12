@@ -94,12 +94,12 @@
                 android:letterSpacing="0.4"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:shadowColor="@android:color/system_accent2_10"
+                android:shadowColor="@color/zc_accent2_10"
                 android:shadowDx="5"
                 android:shadowRadius="1"
                 android:tag="accent1|nolineheight"
                 android:textAllCaps="true"
-                android:textColor="@android:color/system_accent1_300"
+                android:textColor="@color/zc_accent1_300"
                 android:textSize="24sp" />
 
         </FrameLayout>

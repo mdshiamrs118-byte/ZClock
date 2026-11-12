@@ -44,7 +44,7 @@
             android:paddingVertical="20dp"
             android:gravity="center"
             android:tag="accent1|nolineheight"
-            android:textColor="@android:color/system_accent1_400"
+            android:textColor="@color/zc_accent1_400"
             android:textSize="140sp" />
 
         <!-- Stack Layer for Time and Separator -->
@@ -78,7 +78,7 @@
                 android:layout_height="6dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
-                android:background="@android:color/system_accent1_400"
+                android:background="@color/zc_accent1_400"
                 android:tag="accent1" />
         </LinearLayout>
     </LinearLayout>

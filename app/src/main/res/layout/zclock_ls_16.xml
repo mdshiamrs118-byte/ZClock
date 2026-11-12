@@ -16,7 +16,7 @@
         android:format12Hour="EEEE"
         android:format24Hour="EEEE"
         android:tag="accent1|nolineheight"
-        android:textColor="@android:color/system_accent1_300"
+        android:textColor="@color/zc_accent1_300"
         android:textSize="35sp" />
 
     <TextClock
@@ -29,7 +29,7 @@
         android:format24Hour="MMMM"
         android:includeFontPadding="false"
         android:tag="accent3"
-        android:textColor="@android:color/system_accent3_300"
+        android:textColor="@color/zc_accent3_300"
         android:textSize="35sp" />
 
     <TextClock
@@ -42,7 +42,7 @@
         android:format12Hour="dd, yyyy"
         android:format24Hour="dd, yyyy"
         android:tag="accent2"
-        android:textColor="@android:color/system_accent2_300"
+        android:textColor="@color/zc_accent2_300"
         android:textSize="35sp" />
 
     <TextClock

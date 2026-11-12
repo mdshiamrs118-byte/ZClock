@@ -139,7 +139,7 @@
                     android:letterSpacing="0.2"
                     android:tag="accent1|nolineheight"
                     android:textAllCaps="true"
-                    android:textColor="@android:color/system_accent1_600"
+                    android:textColor="@color/zc_accent1_600"
                     android:textSize="26sp"
                     android:textStyle="bold" />
 

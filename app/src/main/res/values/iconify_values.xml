@@ -9,4 +9,24 @@
 <color name="material_dynamic_secondary10">#FF101C2B</color>
 <color name="material_dynamic_secondary90">#FFD7E3F8</color>
 <color name="material_dynamic_tertiary20">#FF3B2948</color>
+<color name="zc_accent1_0">#FFFFFFFF</color>
+<color name="zc_accent1_100">#FFD3E3FD</color>
+<color name="zc_accent1_200">#FFA8C7FA</color>
+<color name="zc_accent1_300">#FF7CACF8</color>
+<color name="zc_accent1_400">#FF4C8DF6</color>
+<color name="zc_accent1_600">#FF0B57D0</color>
+<color name="zc_accent1_700">#FF0842A0</color>
+<color name="zc_accent1_900">#FF041E49</color>
+<color name="zc_accent2_10">#FFEDF2FA</color>
+<color name="zc_accent2_100">#FFD9E2F1</color>
+<color name="zc_accent2_300">#FFA3B3CE</color>
+<color name="zc_accent2_600">#FF475D86</color>
+<color name="zc_accent3_200">#FF8BDBC1</color>
+<color name="zc_accent3_300">#FF65C4A6</color>
+<color name="zc_accent3_400">#FF3FAA8C</color>
+<color name="zc_accent3_600">#FF146C54</color>
+<color name="zc_neutral1_1000">#FF000000</color>
+<color name="zc_neutral1_800">#FF303030</color>
+<color name="zc_neutral1_900">#FF1F1F1F</color>
+<color name="zc_neutral2_900">#FF1A1C1E</color>
 </resources>

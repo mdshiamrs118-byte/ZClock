@@ -28,7 +28,7 @@
                 android:layout_marginEnd="5dp"
                 android:src="@drawable/lockscreen_clock_18_circle"
                 android:tag="accent1"
-                android:tint="@android:color/system_accent1_300" />
+                android:tint="@color/zc_accent1_300" />
 
             <TextClock
                 android:id="@+id/timeTextView"
@@ -57,7 +57,7 @@
                 android:layout_marginEnd="5dp"
                 android:src="@drawable/lockscreen_clock_18_circle"
                 android:tag="accent2"
-                android:tint="@android:color/system_accent3_300" />
+                android:tint="@color/zc_accent3_300" />
 
             <TextClock
                 android:id="@+id/dayTextView"
@@ -86,7 +86,7 @@
                 android:layout_marginEnd="5dp"
                 android:src="@drawable/lockscreen_clock_18_circle"
                 android:tag="accent3"
-                android:tint="@android:color/system_accent2_300" />
+                android:tint="@color/zc_accent2_300" />
 
             <TextClock
                 android:id="@+id/dateTextView"

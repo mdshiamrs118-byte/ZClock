@@ -38,7 +38,7 @@
             android:gravity="center|start"
             android:singleLine="true"
             android:tag="accent1"
-            android:textColor="@android:color/system_accent1_100"
+            android:textColor="@color/zc_accent1_100"
             android:textSize="70dp" />
 
         <TextClock

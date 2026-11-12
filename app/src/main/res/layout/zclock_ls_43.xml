@@ -48,7 +48,7 @@
                 android:layout_gravity="end|bottom"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
-                android:background="@android:color/system_accent1_600"
+                android:background="@color/zc_accent1_600"
                 android:tag="accent1" />
 
             <FrameLayout

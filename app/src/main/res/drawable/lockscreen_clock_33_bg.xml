@@ -5,5 +5,5 @@
         android:width="3dp"
         android:color="?android:textColorPrimary" />
     <corners android:radius="120dp" />
-    <solid android:color="@android:color/system_accent1_300" />
+    <solid android:color="@color/zc_accent1_300" />
 </shape>

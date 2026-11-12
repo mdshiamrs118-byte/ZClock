@@ -40,7 +40,7 @@
                 android:includeFontPadding="false"
                 android:singleLine="true"
                 android:tag="accent1|nolineheight"
-                android:textColor="@android:color/system_accent1_300"
+                android:textColor="@color/zc_accent1_300"
                 android:textSize="120.0dp" />
         </LinearLayout>
     </LinearLayout>

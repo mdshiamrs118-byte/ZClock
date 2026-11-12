@@ -29,7 +29,7 @@
                 android:gravity="center"
                 android:layout_marginEnd="5dp"
                 android:background="@drawable/lockscreen_clock_7_custom_background"
-                android:backgroundTint="@android:color/system_accent1_400"
+                android:backgroundTint="@color/zc_accent1_400"
                 android:clipToOutline="true"
                 android:minWidth="90dp"
                 android:orientation="vertical"
@@ -85,7 +85,7 @@
                         android:format24Hour="HH.mm"
                         android:singleLine="true"
                         android:tag="text2|nolineheight"
-                        android:textColor="@android:color/system_neutral1_1000"
+                        android:textColor="@color/zc_neutral1_1000"
                         android:textSize="35sp" />
 
                     <TextClock
@@ -99,7 +99,7 @@
                         android:format24Hour="MMMM-yyy"
                         android:singleLine="true"
                         android:tag="text2"
-                        android:textColor="@android:color/system_neutral1_1000"
+                        android:textColor="@color/zc_neutral1_1000"
                         android:textSize="18sp" />
             </LinearLayout>
         </LinearLayout>
@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/lockscreen_clock_7_custom_background"
-            android:backgroundTint="@android:color/system_neutral1_900"
+            android:backgroundTint="@color/zc_neutral1_900"
             android:clipToOutline="true"
             android:orientation="horizontal"
             android:padding="10dp">
@@ -136,7 +136,7 @@
                         android:tag="text1|nolineheight"
                         android:text="@string/welcome_back"
                         android:includeFontPadding="false"
-                        android:textColor="@android:color/system_accent1_0"
+                        android:textColor="@color/zc_accent1_0"
                         android:textSize="10dp" />
 
                     <TextView
@@ -146,7 +146,7 @@
                         android:fontFamily="@font/dot57"
                         android:tag="accent1|username"
                         android:text="@string/default_user_name"
-                        android:textColor="@android:color/system_accent1_100"
+                        android:textColor="@color/zc_accent1_100"
                         android:textSize="16dp" />
             </LinearLayout>
 

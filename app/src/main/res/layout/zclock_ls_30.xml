@@ -100,7 +100,7 @@
                     android:format24Hour="HH"
                     android:includeFontPadding="false"
                     android:tag="accent1|nolineheight"
-                    android:textColor="@android:color/system_accent1_300"
+                    android:textColor="@color/zc_accent1_300"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 
@@ -112,7 +112,7 @@
                     android:format24Hour="mm"
                     android:includeFontPadding="false"
                     android:tag="accent1"
-                    android:textColor="@android:color/system_accent1_300"
+                    android:textColor="@color/zc_accent1_300"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 
@@ -139,7 +139,7 @@
                         android:layout_height="8dp"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="12dp"
-                        android:background="@android:color/system_accent2_100"
+                        android:background="@color/zc_accent2_100"
                         android:rotation="45"
                         android:tag="accent2" />
 
@@ -166,7 +166,7 @@
                         android:layout_height="8dp"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="12dp"
-                        android:background="@android:color/system_accent2_100"
+                        android:background="@color/zc_accent2_100"
                         android:rotation="45"
                         android:tag="accent2" />
 

@@ -28,7 +28,7 @@
                 android:format24Hour=" EEEE "
                 android:includeFontPadding="false"
                 android:tag="accent1|nolineheight"
-                android:textColor="@android:color/system_accent1_400"
+                android:textColor="@color/zc_accent1_400"
                 android:textSize="50sp" />
 
 
@@ -42,7 +42,7 @@
                 android:format24Hour=" EEEE "
                 android:includeFontPadding="false"
                 android:tag="accent1|nolineheight"
-                android:textColor="@android:color/system_accent1_400"
+                android:textColor="@color/zc_accent1_400"
                 android:textSize="50sp" />
 
             <TextClock
@@ -55,7 +55,7 @@
                 android:format24Hour=" EEEE "
                 android:includeFontPadding="false"
                 android:tag="accent1|nolineheight"
-                android:textColor="@android:color/system_accent1_400"
+                android:textColor="@color/zc_accent1_400"
                 android:textSize="50sp" />
 
             <TextClock
@@ -67,7 +67,7 @@
                 android:format24Hour=" EEEE "
                 android:includeFontPadding="false"
                 android:tag="accent1|nolineheight"
-                android:textColor="@android:color/system_accent1_400"
+                android:textColor="@color/zc_accent1_400"
                 android:textSize="50sp" />
 
         </FrameLayout>
@@ -160,7 +160,7 @@
                 android:includeFontPadding="false"
                 android:tag="accent1"
                 android:text=" // "
-                android:textColor="@android:color/system_accent1_400"
+                android:textColor="@color/zc_accent1_400"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 

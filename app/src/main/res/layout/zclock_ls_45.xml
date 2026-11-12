@@ -60,7 +60,7 @@
                     android:format24Hour="dd"
                     android:includeFontPadding="false"
                     android:tag="accent1"
-                    android:textColor="@android:color/system_accent1_600"
+                    android:textColor="@color/zc_accent1_600"
                     android:textSize="30sp" />
 
                 <View

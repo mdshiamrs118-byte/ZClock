@@ -51,7 +51,7 @@
                         android:includeFontPadding="false"
                         android:tag="accent1|nolineheight"
                         android:text="TODAY IS"
-                        android:textColor="@android:color/system_accent1_300"
+                        android:textColor="@color/zc_accent1_300"
                         android:textSize="18sp" />
 
                     <TextClock
@@ -75,7 +75,7 @@
                 android:tag="accent1|nolineheight"
                 android:text="こんにちは"
                 android:textAlignment="center"
-                android:textColor="@android:color/system_accent1_300"
+                android:textColor="@color/zc_accent1_300"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 

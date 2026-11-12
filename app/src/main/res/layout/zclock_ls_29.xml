@@ -40,7 +40,7 @@
                 android:includeFontPadding="false"
                 android:tag="accent1|nolineheight|username"
                 android:text="Onii-Chan!!"
-                android:textColor="@android:color/system_accent1_300"
+                android:textColor="@color/zc_accent1_300"
                 android:textSize="22sp" />
 
             <TextView
@@ -59,7 +59,7 @@
                 android:format24Hour="kk • mm a"
                 android:includeFontPadding="false"
                 android:tag="accent1"
-                android:textColor="@android:color/system_accent1_200"
+                android:textColor="@color/zc_accent1_200"
                 android:textSize="14sp" />
 
             <TextView
@@ -78,7 +78,7 @@
                 android:format24Hour="EEEE dd MMMM"
                 android:includeFontPadding="false"
                 android:tag="accent1"
-                android:textColor="@android:color/system_accent1_200"
+                android:textColor="@color/zc_accent1_200"
                 android:textSize="14sp" />
 
         </LinearLayout>
