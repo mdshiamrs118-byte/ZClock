@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
         // ---- live preview of the lock-screen clock ----
         FrameLayout box = new FrameLayout(this);
         box.setBackgroundColor(0xFF202124);
-        box.setClipChildren(true);
+        box.setClipChildren(false);
         preview = new CustomClockView(this, prefs);
         box.addView(preview, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 CustomClockView.heightPx(prefs, getResources().getDisplayMetrics().density), Gravity.CENTER));

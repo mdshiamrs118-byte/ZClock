@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,12 +34,39 @@ public class CustomClockView extends View {
         @Override public void onReceive(Context c, Intent i) { invalidate(); }
     };
 
+    /** When true, parents stop clipping their children so the clock can be moved anywhere. */
+    public boolean unclipAncestors;
+
     public CustomClockView(Context c, Prefs prefs) {
         super(c);
         this.prefs = prefs;
+        applyOffset();
     }
 
-    public void setPrefs(Prefs prefs) { this.prefs = prefs; schedule(); invalidate(); }
+    public void setPrefs(Prefs prefs) {
+        this.prefs = prefs;
+        applyOffset();
+        schedule();
+        invalidate();
+    }
+
+    private void applyOffset() {
+        if (prefs == null) return;
+        float d = getResources().getDisplayMetrics().density;
+        setTranslationX(prefs.i(Prefs.LS_X) * d);
+        setTranslationY(prefs.i(Prefs.LS_Y) * d);
+    }
+
+    private void unclip() {
+        if (!unclipAncestors) return;
+        android.view.ViewParent par = getParent();
+        for (int i = 0; i < 10 && par instanceof ViewGroup; i++) {
+            ViewGroup vg = (ViewGroup) par;
+            vg.setClipChildren(false);
+            vg.setClipToPadding(false);
+            par = vg.getParent();
+        }
+    }
 
     public static int heightPx(Prefs pr, float density) {
         return Math.round(pr.i(Prefs.LS_SIZE) * density * pr.i(Prefs.LS_SY) / 100f);
@@ -58,6 +86,7 @@ public class CustomClockView extends View {
 
     @Override protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        unclip();
         if (!rxRegistered) {
             IntentFilter f = new IntentFilter();
             f.addAction(Intent.ACTION_TIME_CHANGED);
@@ -120,7 +149,7 @@ public class CustomClockView extends View {
         float cy = -dateH / 2f;
 
         c.save();
-        c.translate(getWidth() / 2f + prefs.i(Prefs.LS_X) * d, getHeight() / 2f + prefs.i(Prefs.LS_Y) * d);
+        c.translate(getWidth() / 2f, getHeight() / 2f);
         c.scale(sx, sy);
 
         p.reset();

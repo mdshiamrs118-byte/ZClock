@@ -208,6 +208,7 @@ public class MainHook implements IXposedHookLoadPackage {
         if (cv == null) {
             cv = new CustomClockView(g.getContext(), p);
             cv.setTag(CUSTOM_TAG);
+            cv.unclipAncestors = true;
             ViewGroup.LayoutParams lp;
             if (g instanceof RelativeLayout) {
                 RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h);
