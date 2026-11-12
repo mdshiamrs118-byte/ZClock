@@ -88,6 +88,7 @@ public class MainActivity extends Activity {
         addSeek("Stretch height", Prefs.LS_SY, 40, 200, " %");
         addSeek("Position X", Prefs.LS_X, -250, 250, " dp");
         addSeek("Position Y", Prefs.LS_Y, -250, 250, " dp");
+        addSwitch("Move notifications with the clock (follows Position Y)", Prefs.LS_PUSH);
         addColor("Colour", Prefs.LS_COLOR, false);
         addSwitch("Recolour Iconify clocks with this colour", Prefs.LS_RECOLOR);
         addSwitch("24-hour time", Prefs.LS_24H);

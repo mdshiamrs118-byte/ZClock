@@ -53,8 +53,9 @@ public class CustomClockView extends View {
     private void applyOffset() {
         if (prefs == null) return;
         float d = getResources().getDisplayMetrics().density;
+        int base = baseHeightPx(prefs, d);
         setTranslationX(prefs.i(Prefs.LS_X) * d);
-        setTranslationY(prefs.i(Prefs.LS_Y) * d);
+        setTranslationY(prefs.transY(base, prefs.layoutH(base, d), d));
     }
 
     private void unclip() {
@@ -68,8 +69,13 @@ public class CustomClockView extends View {
         }
     }
 
-    public static int heightPx(Prefs pr, float density) {
+    public static int baseHeightPx(Prefs pr, float density) {
         return Math.round(pr.i(Prefs.LS_SIZE) * density * pr.i(Prefs.LS_SY) / 100f);
+    }
+
+    /** Layout height (includes the Y offset when "move notifications with the clock" is on). */
+    public static int heightPx(Prefs pr, float density) {
+        return pr.layoutH(baseHeightPx(pr, density), density);
     }
 
     // ---------- ticking ----------

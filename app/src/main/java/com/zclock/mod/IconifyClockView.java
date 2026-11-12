@@ -57,11 +57,12 @@ public class IconifyClockView extends FrameLayout {
         int sw = getResources().getDisplayMetrics().widthPixels;
         content.measure(View.MeasureSpec.makeMeasureSpec(sw, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        targetH = Math.max(1, Math.round(content.getMeasuredHeight() * sy));
+        int nat = Math.max(1, Math.round(content.getMeasuredHeight() * sy));
+        targetH = p.layoutH(nat, d);
         content.setScaleX(sx);
         content.setScaleY(sy);
         setTranslationX(p.i(Prefs.LS_X) * d);
-        setTranslationY(p.i(Prefs.LS_Y) * d);
+        setTranslationY(p.transY(nat, targetH, d));
 
         ViewGroup.LayoutParams lp = getLayoutParams();
         if (lp != null && lp.height != targetH) { lp.height = targetH; setLayoutParams(lp); }

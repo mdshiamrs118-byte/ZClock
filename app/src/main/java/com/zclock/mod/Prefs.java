@@ -20,7 +20,7 @@ public final class Prefs {
     // ---- Lock screen clock ----
     public static final String LS_ON = "ls_on", LS_STYLE = "ls_style", LS_SIZE = "ls_size",
             LS_WEIGHT = "ls_weight", LS_SX = "ls_sx", LS_SY = "ls_sy", LS_X = "ls_x", LS_Y = "ls_y",
-            LS_COLOR = "ls_color", LS_RECOLOR = "ls_recolor", LS_HIDE_DATE = "ls_hide_date", LS_24H = "ls_24h", LS_DATE = "ls_date", LS_SEC = "ls_sec";
+            LS_COLOR = "ls_color", LS_RECOLOR = "ls_recolor", LS_PUSH = "ls_push", LS_HIDE_DATE = "ls_hide_date", LS_24H = "ls_24h", LS_DATE = "ls_date", LS_SEC = "ls_sec";
 
     /** Styles 0-7 are built in; styles from ICONIFY_BASE on are the ported Iconify layouts. */
     public static final int ICONIFY_BASE = 8, ICONIFY_COUNT = 60;
@@ -50,7 +50,7 @@ public final class Prefs {
         DEF.put(SB_SPACING, 0); DEF.put(SB_COLOR, 0);
         DEF.put(LS_ON, 1); DEF.put(LS_STYLE, 1); DEF.put(LS_SIZE, 120); DEF.put(LS_WEIGHT, 600);
         DEF.put(LS_SX, 100); DEF.put(LS_SY, 100); DEF.put(LS_X, 0); DEF.put(LS_Y, 0);
-        DEF.put(LS_COLOR, 0xFFFFFFFF); DEF.put(LS_RECOLOR, 0); DEF.put(LS_HIDE_DATE, 0); DEF.put(LS_24H, 1); DEF.put(LS_DATE, 1); DEF.put(LS_SEC, 0);
+        DEF.put(LS_COLOR, 0xFFFFFFFF); DEF.put(LS_RECOLOR, 0); DEF.put(LS_PUSH, 1); DEF.put(LS_HIDE_DATE, 0); DEF.put(LS_24H, 1); DEF.put(LS_DATE, 1); DEF.put(LS_SEC, 0);
     }
 
     private final SharedPreferences sp;
@@ -59,6 +59,22 @@ public final class Prefs {
     public int i(String k) { Integer d = DEF.get(k); return sp.getInt(k, d == null ? 0 : d); }
     public boolean b(String k) { Integer d = DEF.get(k); return sp.getBoolean(k, d != null && d == 1); }
     public String s(String k, String d) { return sp.getString(k, d); }
+
+    /**
+     * "Move notifications with the clock": instead of only shifting the drawing, the clock's layout
+     * height grows/shrinks by the Y offset, so everything below it (date, notifications) follows.
+     */
+    public int layoutH(int base, float density) {
+        if (!b(LS_PUSH)) return base;
+        return Math.max(1, base + Math.round(i(LS_Y) * density));
+    }
+
+    /** Translation that keeps the drawn clock at (base/2 + Y) whatever layout height is used. */
+    public float transY(int base, int layout, float density) {
+        float y = i(LS_Y) * density;
+        if (!b(LS_PUSH)) return y;
+        return base / 2f + y - layout / 2f;
+    }
 
     public String sig(String[] keys) {
         Map<String, ?> all = sp.getAll();
