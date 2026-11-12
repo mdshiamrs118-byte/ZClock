@@ -190,6 +190,22 @@ public class MainHook implements IXposedHookLoadPackage {
             };
             XposedBridge.hookAllMethods(slice, "onFinishInflate", dateHook);
             XposedBridge.hookAllMethods(slice, "showSlice", dateHook);
+            XposedBridge.hookAllMethods(slice, "onMeasure", new XC_MethodHook() {
+                @Override protected void beforeHookedMethod(MethodHookParam param) {
+                    ViewGroup g = (ViewGroup) param.thisObject;
+                    slices.add(g);
+                    applyDateVisibility(g);
+                }
+            });
+            // the date cell lives in the inner Row, which does override onMeasure
+            Class<?> row = XposedHelpers.findClassIfExists("com.android.keyguard.KeyguardSliceView$Row", cl);
+            if (row != null) {
+                XposedBridge.hookAllMethods(row, "onMeasure", new XC_MethodHook() {
+                    @Override protected void beforeHookedMethod(MethodHookParam param) {
+                        applyDateVisibility((ViewGroup) param.thisObject);
+                    }
+                });
+            }
         } else {
             XposedBridge.log("ZClock: KeyguardSliceView not found");
         }
@@ -202,17 +218,39 @@ public class MainHook implements IXposedHookLoadPackage {
         });
     }
 
+    /**
+     * On Android 11 the date is NOT the "title": it is a cell inside the slice's row, tagged with its
+     * Uri (content://com.android.systemui.keyguard/date). We match by that tag and, as a fallback,
+     * by the text itself, then hide/show it.
+     */
     private static void applyDateVisibility(ViewGroup g) {
         try {
-            View title = field(g, "mTitle");   // the date line of the keyguard slice
-            if (title == null) return;
-            if (prefs().b(Prefs.LS_HIDE_DATE)) {
-                title.setVisibility(View.GONE);
-            } else if (title instanceof TextView && ((TextView) title).getText().length() > 0
-                    && title.getVisibility() == View.GONE) {
-                title.setVisibility(View.VISIBLE);   // toggled off again -> bring it back
-            }
+            boolean hide = prefs().b(Prefs.LS_HIDE_DATE);
+            String today = null;
+            try {
+                java.util.Locale loc = java.util.Locale.getDefault();
+                today = new SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(loc, "EEEMMMd"), loc)
+                        .format(new Date());
+            } catch (Throwable ignored) {}
+            setDateViews(g, hide, today);
         } catch (Throwable t) { XposedBridge.log("ZClock date: " + t); }
+    }
+
+    private static void setDateViews(View v, boolean hide, String today) {
+        if (v instanceof TextView) {
+            Object tag = v.getTag();
+            CharSequence text = ((TextView) v).getText();
+            boolean isDate = (tag != null && tag.toString().toLowerCase().endsWith("/date"))
+                    || (today != null && text != null && today.contentEquals(text));
+            if (isDate) {
+                int want = hide ? View.GONE : View.VISIBLE;
+                if (v.getVisibility() != want && (hide || text.length() > 0)) v.setVisibility(want);
+            }
+        }
+        if (v instanceof ViewGroup) {
+            ViewGroup vg = (ViewGroup) v;
+            for (int i = 0; i < vg.getChildCount(); i++) setDateViews(vg.getChildAt(i), hide, today);
+        }
     }
 
     private static View field(Object o, String name) {
