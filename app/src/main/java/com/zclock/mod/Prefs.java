@@ -60,13 +60,16 @@ public final class Prefs {
     public boolean b(String k) { Integer d = DEF.get(k); return sp.getBoolean(k, d != null && d == 1); }
     public String s(String k, String d) { return sp.getString(k, d); }
 
+    /** Height the layout reserves for the clock view (kept equal to its own height). */
+    public int layoutH(int base, float density) { return base; }
+
     /**
-     * Height the layout reserves for the clock. Everything below it (date, notifications) starts
-     * after this. = clock height + (Position Y if "move notifications with the clock") + manual offset.
+     * How far the notification list should move, in px: the clock's Position Y (when
+     * "notifications follow the clock" is on and the custom clock is enabled) plus the manual offset.
      */
-    public int layoutH(int base, float density) {
-        int off = (b(LS_PUSH) ? i(LS_Y) : 0) + i(LS_NOTIF);
-        return Math.max(1, base + Math.round(off * density));
+    public int notifOffsetPx(float density) {
+        int off = (b(LS_ON) && b(LS_PUSH) ? i(LS_Y) : 0) + i(LS_NOTIF);
+        return Math.round(off * density);
     }
 
     public String sig(String[] keys) {

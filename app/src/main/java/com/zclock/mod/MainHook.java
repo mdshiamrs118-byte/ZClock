@@ -3,6 +3,7 @@ package com.zclock.mod;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.IntentFilter;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
+import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -38,6 +40,7 @@ public class MainHook implements IXposedHookLoadPackage {
 
     private static XSharedPreferences xp;
     private static boolean receiverRegistered;
+    private static WeakReference<Object> panelRef;
     private static final Set<TextView> clocks = Collections.newSetFromMap(new WeakHashMap<TextView, Boolean>());
     private static final Set<TextView> secLoops = Collections.newSetFromMap(new WeakHashMap<TextView, Boolean>());
     private static final Set<ViewGroup> slices = Collections.newSetFromMap(new WeakHashMap<ViewGroup, Boolean>());
@@ -177,6 +180,8 @@ public class MainHook implements IXposedHookLoadPackage {
             }
         });
 
+        hookNotificationPosition(cl);
+
         // Stock lock screen date (KeyguardSliceView): optionally hide it
         Class<?> slice = XposedHelpers.findClassIfExists("com.android.keyguard.KeyguardSliceView", cl);
         if (slice != null) {
@@ -223,6 +228,41 @@ public class MainHook implements IXposedHookLoadPackage {
      * Uri (content://com.android.systemui.keyguard/date). We match by that tag and, as a fallback,
      * by the text itself, then hide/show it.
      */
+    /**
+     * The notification list on the lock screen starts at stackScrollerPadding, computed by
+     * KeyguardClockPositionAlgorithm.run(). We add our offset to that result.
+     */
+    private void hookNotificationPosition(ClassLoader cl) {
+        Class<?> alg = XposedHelpers.findClassIfExists("com.android.systemui.statusbar.phone.KeyguardClockPositionAlgorithm", cl);
+        if (alg == null) { XposedBridge.log("ZClock: KeyguardClockPositionAlgorithm not found"); }
+        else {
+            XposedBridge.hookAllMethods(alg, "run", new XC_MethodHook() {
+                @Override protected void afterHookedMethod(MethodHookParam param) {
+                    try {
+                        if (param.args == null || param.args.length == 0 || param.args[0] == null) return;
+                        int px = prefs().notifOffsetPx(Resources.getSystem().getDisplayMetrics().density);
+                        if (px == 0) return;
+                        Object r = param.args[0];
+                        for (String n : new String[]{"stackScrollerPadding", "stackScrollerPaddingExpanded"}) {
+                            try {
+                                XposedHelpers.setIntField(r, n, Math.max(0, XposedHelpers.getIntField(r, n) + px));
+                            } catch (Throwable ignored) {}
+                        }
+                    } catch (Throwable t) { XposedBridge.log("ZClock notif: " + t); }
+                }
+            });
+        }
+        // remember the panel so a settings change can re-run the positioning immediately
+        Class<?> panel = XposedHelpers.findClassIfExists("com.android.systemui.statusbar.phone.NotificationPanelViewController", cl);
+        if (panel != null) {
+            XposedBridge.hookAllMethods(panel, "positionClockAndNotifications", new XC_MethodHook() {
+                @Override protected void afterHookedMethod(MethodHookParam param) {
+                    panelRef = new WeakReference<>(param.thisObject);
+                }
+            });
+        }
+    }
+
     private static void applyDateVisibility(ViewGroup g) {
         try {
             boolean hide = prefs().b(Prefs.LS_HIDE_DATE);
@@ -253,6 +293,19 @@ public class MainHook implements IXposedHookLoadPackage {
         }
     }
 
+    /** Keeps the date/alarm row under the clock when "notifications follow the clock" is on. */
+    private static void moveStatusArea(ViewGroup g, Prefs p, float d) {
+        View area = field(g, "mKeyguardStatusArea");
+        if (area == null) area = field(g, "mStatusArea");
+        if (area == null) {
+            int id = g.getResources().getIdentifier("keyguard_status_area", "id", "com.android.systemui");
+            if (id != 0) area = g.findViewById(id);
+        }
+        if (area != null) {
+            area.setTranslationY(p.b(Prefs.LS_ON) && p.b(Prefs.LS_PUSH) ? p.i(Prefs.LS_Y) * d : 0f);
+        }
+    }
+
     private static View field(Object o, String name) {
         try { return (View) XposedHelpers.getObjectField(o, name); } catch (Throwable t) { return null; }
     }
@@ -263,6 +316,7 @@ public class MainHook implements IXposedHookLoadPackage {
         CustomClockView cv = (CustomClockView) g.findViewWithTag(CUSTOM_TAG);
         float d = g.getResources().getDisplayMetrics().density;
         int style = p.i(Prefs.LS_STYLE);
+        moveStatusArea(g, p, d);
 
         if (!p.b(Prefs.LS_ON) || style <= 0) {
             if (cv != null) cv.setVisibility(View.GONE);
@@ -383,6 +437,10 @@ public class MainHook implements IXposedHookLoadPackage {
             startSeconds(tv);
         }
         for (ViewGroup g : new ArrayList<>(slices)) applyDateVisibility(g);
+        try {
+            Object panel = panelRef == null ? null : panelRef.get();
+            if (panel != null) XposedHelpers.callMethod(panel, "positionClockAndNotifications");
+        } catch (Throwable ignored) {}
         for (ViewGroup g : new ArrayList<>(switches)) {
             try { setupKeyguard(g); } catch (Throwable t) { XposedBridge.log("ZClock refresh: " + t); }
         }
